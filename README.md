@@ -2,7 +2,13 @@
 UART module written in SystemVerilog.
 Verified with Verilator.
 
-## Module: x_uart_rx
+## rtl/x_uart_rx
+
+- ``i_clk``: Clock
+- ``i_rst``: Reset active high
+- ``i_rx``: Input, 1-bit wide UART receive wire
+- ``o_valid``: Output, 1-bit wide control asserted high when transmission received present on ``o_data``   
+- ``o_data``: Output, 8-bit wide data received
 
 ### Parameters
  
@@ -11,7 +17,7 @@ Verified with Verilator.
 
 ### Signals
 
-## Module: x_uart_tx
+## rtl/x_uart_tx
 
 ### Parameters
  
@@ -27,7 +33,7 @@ Verified with Verilator.
  - ``i_valid``: Input, 1-bit wide control signal to be asserted high when ``i_data`` is ready
  - ``o_accept``: Output, 1-bit wide control signal asserted once ``i_data`` captured 
 
-## Module: x_uart
+## rtl/x_uart
 
 Wrapper for both ``x_uart_rx`` and ``x_uart_tx``.
 

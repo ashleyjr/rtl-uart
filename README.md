@@ -1,25 +1,24 @@
 # rtl-uart
-UART module written in SystemVerilog 
+UART module written in SystemVerilog.
+Verified with Verilator.
 
-## Modules
+## Module: x_uart_rx
 
-### x_uart_rx
-
-#### Parameters
+### Parameters
  
  - ``p_clk_hz``: ``i_clk`` frequency in Hz
  - ``p_baud``: Baud rate
 
-#### Signals
+### Signals
 
-### x_uart_tx
+## Module: x_uart_tx
 
-#### Parameters
+### Parameters
  
  - ``p_clk_hz``: ``i_clk`` frequency in Hz
  - ``p_baud``: Baud rate
 
-#### Signals
+### Signals
 
  - ``i_clk``: Clock
  - ``i_rst``: Reset active high
@@ -28,16 +27,15 @@ UART module written in SystemVerilog
  - ``i_valid``: Input, 1-bit wide control signal to be asserted high when ``i_data`` is ready
  - ``o_accept``: Output, 1-bit wide control signal asserted once ``i_data`` captured 
 
-
-### x_uart
+## Module: x_uart
 
 Wrapper for both ``x_uart_rx`` and ``x_uart_tx``.
 
-#### Parameters
+### Parameters
  
  - p_clk_hz: ``i_clk`` frequency in Hz
  - p_baud: Baud rate
 
-#### Signals
+### Signals
 
   

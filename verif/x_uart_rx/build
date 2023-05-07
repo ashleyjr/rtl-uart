@@ -1,0 +1,9 @@
+#!/bin/bash
+
+verilator --trace \
+   --cc ../../rtl/x_uart_rx.sv \
+   --exe x_uart_rx_tb.cpp 
+
+
+make -C obj_dir -f Vx_uart_rx.mk Vx_uart_rx
+

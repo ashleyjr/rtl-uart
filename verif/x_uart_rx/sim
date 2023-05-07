@@ -1,0 +1,6 @@
+#!/bin/bash
+
+./build
+
+./obj_dir/Vx_uart_rx "$@"
+

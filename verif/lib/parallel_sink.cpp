@@ -6,15 +6,22 @@
 #include "include/parallel_sink.h"
 #include <list>
 
-void ParallelSink::advance(bus parallel) {
-   if(parallel.valid){
-      if(parallel.data != recieves.front()){
-         cout << "Error";
+ParallelSink::ParallelSink(void){}
+
+bool ParallelSink::advance(uint8_t valid, uint32_t bus) {
+   if(valid){
+      if(bus != recieves.front()){
+         return false; 
       }
-      recicves.pop_front()
+      recieves.pop_front();
    }
+   return true;
 }
 
 void ParallelSink::recieve(uint32_t data) {
    recieves.push_back(data);
+}
+
+bool ParallelSink::remaining(void) {
+   return !recieves.empty();
 }

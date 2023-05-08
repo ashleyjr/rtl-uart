@@ -8,20 +8,18 @@
 #include "../lib/include/uart_driver.h"
 #include <stdio.h>
 
-#define PKTS 1000
-#define STOP 10000000
+#define PKTS 10000
 
 int main(int argc, char** argv, char** env) {
    
-   vluint64_t sim_time = 0;
-   uint64_t cycles = 0;
+   vluint64_t sim_time = 0; 
    Vx_uart_rx *dut = new Vx_uart_rx; 
    Verilated::traceEverOn(true);
    VerilatedVcdC *m_trace = new VerilatedVcdC; 
    
    uint8_t test_vector;
    UartDriver drv(1000000, 9600);
-   ParallelSink sink();
+   ParallelSink sink;
    
    dut->trace(m_trace, 5);
    m_trace->open("waveform.vcd");
@@ -53,7 +51,7 @@ int main(int argc, char** argv, char** env) {
       sink.recieve(test_vector);
    }
    
-   while (cycles < STOP) {
+   while (sink.remaining()) {
       
       // Falling Edge
       dut->i_clk = 0; 
@@ -63,8 +61,14 @@ int main(int argc, char** argv, char** env) {
       m_trace->dump(sim_time); 
       sim_time++;
 
-
+      // Transactors
       dut->i_rx = drv.advance();
+      if(!sink.advance(dut->o_valid, dut->o_data)){      
+         m_trace->close();
+         delete dut;
+         std::cout << "FAIL\n";
+         exit(EXIT_FAILURE);
+      }
 
       // Rising Edge
       dut->i_clk = 1;
@@ -73,13 +77,11 @@ int main(int argc, char** argv, char** env) {
       dut->eval();
       m_trace->dump(sim_time); 
       sim_time++;
-
-      // Event
-      cycles++; 
    }
       
    m_trace->close();
    delete dut;
+   std::cout << "PASS\n";
    exit(EXIT_SUCCESS);
 }
 

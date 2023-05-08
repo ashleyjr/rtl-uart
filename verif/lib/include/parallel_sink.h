@@ -3,15 +3,12 @@
 
 #include <list>
 
-struct {            
-   uint8_t valid;       
-   uint32_t data; 
-} bus;              
-
 class ParallelSink {
    public:
-      void advance(bus parallel);
+      ParallelSink(void);
+      bool advance(uint8_t valid, uint32_t bus);
       void recieve(uint32_t data);
+      bool remaining(void);
    private:
       std::list<uint32_t> recieves; 
 };

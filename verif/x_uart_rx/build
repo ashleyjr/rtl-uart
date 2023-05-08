@@ -2,9 +2,10 @@
 
 verilator --trace \
    --cc ../../rtl/x_uart_rx.sv \
+   --cc ../../lib/parallel_sink.cpp \
    --cc ../../lib/uart_driver.cpp \
    --exe x_uart_rx_tb.cpp \
-   -I../../lib/include/
+   -I../../lib/include
 
 make -C obj_dir -f Vx_uart_rx.mk Vx_uart_rx
 

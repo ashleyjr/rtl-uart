@@ -7,8 +7,8 @@
 
  - Verified with Verilator
 
-   - 9600 to 15200 baud
-   - 1MHz to 1GHz
+   - 9600 to 115200 baud
+   - 10MHz to 640MHz
 
 ## rtl/x_uart_rx
 

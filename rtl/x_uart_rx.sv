@@ -1,6 +1,6 @@
 module x_uart_rx#(
-   p_clk_hz = 10000000, 
-   p_baud   = 115200
+   parameter real p_clk_hz = 1000000, 
+   parameter real p_baud   = 115200
 )(
    input    logic       i_clk,
    input    logic       i_rst,
@@ -9,9 +9,9 @@ module x_uart_rx#(
    output   logic [7:0] o_data
 );
  
-   localparam p_timer_top   = p_clk_hz / p_baud;
-   localparam p_timer_half  = p_timer_top / 2;
-   localparam p_timer_width = $clog2(p_timer_top);
+   localparam integer p_timer_top   = int'($ceil(p_clk_hz / p_baud));
+   localparam integer p_timer_half  = p_timer_top / 2;
+   localparam integer p_timer_width = $clog2(p_timer_top);
   
    localparam logic [p_timer_width-1:0] p_timer_top_w  = p_timer_top[p_timer_width-1:0];
    localparam logic [p_timer_width-1:0] p_timer_half_w = p_timer_half[p_timer_width-1:0];

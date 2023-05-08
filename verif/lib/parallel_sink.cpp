@@ -11,6 +11,7 @@ ParallelSink::ParallelSink(void){}
 bool ParallelSink::advance(uint8_t valid, uint32_t bus) {
    if(valid){
       if(bus != recieves.front()){
+         std::cout << bus << " != " << recieves.front() << "\n";
          return false; 
       }
       recieves.pop_front();

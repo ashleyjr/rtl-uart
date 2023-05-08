@@ -2,5 +2,5 @@
 
 ./build
 
-./obj_dir/Vx_uart_rx  10000000 115200 100
+./obj_dir/Vx_uart_rx  1000000 115200 100
 

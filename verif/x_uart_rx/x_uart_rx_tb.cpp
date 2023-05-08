@@ -7,7 +7,8 @@
 #include "../lib/include/uart_driver.h"
 #include <stdio.h>
 
-#define STOP 10000
+#define PKTS 1000
+#define STOP 10000000
 
 int main(int argc, char** argv, char** env) {
    
@@ -17,7 +18,8 @@ int main(int argc, char** argv, char** env) {
    Verilated::traceEverOn(true);
    VerilatedVcdC *m_trace = new VerilatedVcdC; 
    
-   UartDriver drv(9600);
+   uint8_t test_vector;
+   UartDriver drv(1000000, 9600);
 
    dut->trace(m_trace, 5);
    m_trace->open("waveform.vcd");
@@ -42,7 +44,11 @@ int main(int argc, char** argv, char** env) {
    // Out of Reset
    dut->i_rst = 0;
 
-   drv.send(0xAA);
+   // List of sends
+   for(int i=0;i<PKTS;i++){
+      test_vector = rand(); 
+      drv.send(test_vector);
+   }
    
    while (cycles < STOP) {
       

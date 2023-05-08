@@ -4,6 +4,7 @@
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 #include "Vx_uart_rx.h"
+#include "../lib/include/parallel_sink.h"
 #include "../lib/include/uart_driver.h"
 #include <stdio.h>
 
@@ -20,7 +21,8 @@ int main(int argc, char** argv, char** env) {
    
    uint8_t test_vector;
    UartDriver drv(1000000, 9600);
-
+   ParallelSink sink();
+   
    dut->trace(m_trace, 5);
    m_trace->open("waveform.vcd");
    
@@ -48,6 +50,7 @@ int main(int argc, char** argv, char** env) {
    for(int i=0;i<PKTS;i++){
       test_vector = rand(); 
       drv.send(test_vector);
+      sink.recieve(test_vector);
    }
    
    while (cycles < STOP) {

@@ -1,0 +1,19 @@
+#ifndef PARALLEL_SINK_H
+#define PARALLEL_SINK_H
+
+#include <list>
+
+struct {            
+   uint8_t valid;       
+   uint32_t data; 
+} bus;              
+
+class ParallelSink {
+   public:
+      void advance(bus parallel);
+      void recieve(uint32_t data);
+   private:
+      std::list<uint32_t> recieves; 
+};
+#endif
+

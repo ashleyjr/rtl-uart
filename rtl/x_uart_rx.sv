@@ -1,6 +1,6 @@
 module x_uart_rx#(
-   p_clk_hz = 1000000, 
-   p_baud   = 9600
+   p_clk_hz = 10000000, 
+   p_baud   = 115200
 )(
    input    logic       i_clk,
    input    logic       i_rst,

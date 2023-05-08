@@ -8,7 +8,8 @@
 #include "../lib/include/uart_driver.h"
 #include <stdio.h>
 
-#define PKTS 10000
+#define BAUD 115200
+#define PKTS 100
 
 int main(int argc, char** argv, char** env) {
    
@@ -17,8 +18,14 @@ int main(int argc, char** argv, char** env) {
    Verilated::traceEverOn(true);
    VerilatedVcdC *m_trace = new VerilatedVcdC; 
    
+   uint32_t clk = std::stoi(argv[1]);
+   uint32_t baud = std::stoi(argv[2]);
+   uint32_t pkts = std::stoi(argv[3]);
+
+   std::cout << "CONFIG: clk=" << clk << ",baud=" << baud << ",pkts=" << pkts << "\n";
+
    uint8_t test_vector;
-   UartDriver drv(1000000, 9600);
+   UartDriver drv(clk, baud);
    ParallelSink sink;
    
    dut->trace(m_trace, 5);
@@ -45,7 +52,7 @@ int main(int argc, char** argv, char** env) {
    dut->i_rst = 0;
 
    // List of sends
-   for(int i=0;i<PKTS;i++){
+   for(uint32_t i=0;i<pkts;i++){
       test_vector = rand(); 
       drv.send(test_vector);
       sink.recieve(test_vector);

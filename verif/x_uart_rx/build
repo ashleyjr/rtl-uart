@@ -7,5 +7,5 @@ verilator --trace \
    --exe x_uart_rx_tb.cpp \
    -I../../lib/include
 
-make -C obj_dir -f Vx_uart_rx.mk Vx_uart_rx
+make -C obj_dir -f Vx_uart_rx.mk Vx_uart_rx 10000000 115200 100
 

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+CMD=" --cc ../../rtl/x_uart_rx.sv \
+      --cc ../../lib/parallel_sink.cpp \
+      --cc ../../lib/uart_driver.cpp \
+      --exe x_uart_rx_tb.cpp \
+      -I../../lib/include"
+
+for PKTS in 1 10 100 1000 10000
+do
+   for CLK in 1000000 10000000 100000000 1000000000
+   do
+      for BAUD in 9600 14400 19200 38400 57600 115200 128000 256000 
+      do
+         verilator --trace \
+            $CMD \
+            -Gp_clk_hz=$CLK \
+            -Gp_baud=$BAUD 
+         
+         make -s -C obj_dir -f Vx_uart_rx.mk Vx_uart_rx 
+         
+         ./obj_dir/Vx_uart_rx $CLK $BAUD $PKTS
+      done
+   done
+done

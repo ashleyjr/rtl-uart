@@ -1,0 +1,18 @@
+#!/bin/bash
+
+CLKS="10000000 20000000 40000000 80000000 160000000 320000000 640000000"
+BAUDS="9600 14400 19200 38400 57600 115200 128000 256000"
+
+for CLK in $CLKS 
+do
+   for BAUD in $BAUDS
+   do
+      yosys \
+         -p "read -sv ../../rtl/x_uart_rx.sv" \
+         -p "chparam -set p_clk_hz $CLK x_uart_rx" \
+         -p "chparam -set p_baud $BAUD x_uart_rx" \
+         -p "synth -top x_uart_rx" \
+         -p "stat -tech cmos" \
+         | grep "Estimated"
+   done
+done

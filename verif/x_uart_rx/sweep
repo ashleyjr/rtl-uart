@@ -18,7 +18,7 @@ do
    do
       for BAUD in $BAUDS
       do
-         verilator --trace $CMD -Gp_clk_hz=$CLK -Gp_baud=$BAUD  
+         verilator $CMD -Gp_clk_hz=$CLK -Gp_baud=$BAUD  
          make -s -C obj_dir -f Vx_uart_rx.mk Vx_uart_rx 
          ./obj_dir/Vx_uart_rx $CLK $BAUD $PKT
       done

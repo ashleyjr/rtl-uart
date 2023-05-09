@@ -1,6 +1,17 @@
 #!/bin/bash
 
-./build
+CLK="10000000"
+BAUD="256000"
 
-./obj_dir/Vx_uart_rx  1000000 115200 100
+verilator --trace \
+   --cc ../../rtl/x_uart_rx.sv \
+   --cc ../../lib/parallel_sink.cpp \
+   --cc ../../lib/uart_driver.cpp \
+   --exe x_uart_rx_tb.cpp \
+   -I../../lib/include \
+   -Gp_clk_hz=$CLK -Gp_baud=$BAUD 
+
+make -C obj_dir -f Vx_uart_rx.mk Vx_uart_rx
+
+./obj_dir/Vx_uart_rx $CLK $BAUD 100
 

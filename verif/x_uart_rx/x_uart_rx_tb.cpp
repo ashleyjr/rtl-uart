@@ -8,16 +8,18 @@
 #include "../lib/include/uart_driver.h"
 #include <stdio.h>
 
-#define BAUD 115200
-#define PKTS 100
+// TODO: Pass in on command line
+#define TRACE_ENABLED
 
 int main(int argc, char** argv, char** env) {
    
    vluint64_t sim_time = 0; 
    Vx_uart_rx *dut = new Vx_uart_rx; 
    Verilated::traceEverOn(true);
+   #ifdef TRACE_ENABLED
    VerilatedVcdC *m_trace = new VerilatedVcdC; 
-   
+   #endif 
+
    uint32_t clk = std::stoi(argv[1]);
    uint32_t baud = std::stoi(argv[2]);
    uint32_t pkts = std::stoi(argv[3]);
@@ -27,9 +29,11 @@ int main(int argc, char** argv, char** env) {
    uint8_t test_vector;
    UartDriver drv(clk, baud);
    ParallelSink sink;
-   
+  
+   #ifdef TRACE_ENABLED
    dut->trace(m_trace, 5);
    m_trace->open("waveform.vcd");
+   #endif   
    
    dut->i_clk     = 0;
    dut->i_rst     = 0;
@@ -37,7 +41,9 @@ int main(int argc, char** argv, char** env) {
    
    // Tick
    dut->eval();
+   #ifdef TRACE_ENABLED
    m_trace->dump(sim_time); 
+   #endif
    sim_time++;
    
    // Reset
@@ -45,7 +51,9 @@ int main(int argc, char** argv, char** env) {
    
    // Tick
    dut->eval();
+   #ifdef TRACE_ENABLED
    m_trace->dump(sim_time); 
+   #endif
    sim_time++;
 
    // Out of Reset
@@ -65,13 +73,17 @@ int main(int argc, char** argv, char** env) {
      
       // Tick
       dut->eval();
+      #ifdef TRACE_ENABLED
       m_trace->dump(sim_time); 
+      #endif
       sim_time++;
 
       // Transactors
       dut->i_rx = drv.advance();
       if(!sink.advance(dut->o_valid, dut->o_data)){      
+         #ifdef TRACE_ENABLED  
          m_trace->close();
+         #endif
          delete dut;
          std::cout << "FAIL\n";
          exit(EXIT_FAILURE);
@@ -82,11 +94,16 @@ int main(int argc, char** argv, char** env) {
            
       // Tick
       dut->eval();
+      #ifdef TRACE_ENABLED
       m_trace->dump(sim_time); 
+      #endif
       sim_time++;
    }
-      
+     
+   #ifdef TRACE_ENABLED
    m_trace->close();
+   #endif
+
    delete dut;
    std::cout << "PASS\n";
    exit(EXIT_SUCCESS);

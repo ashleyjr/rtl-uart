@@ -25,6 +25,10 @@
 - ``o_valid``: Output, 1-bit wide control asserted high when transmission received present on ``o_data``   
 - ``o_data``: Output, 8-bit wide data received
 
+### Size
+
+![Screenshot](doc/images/x_uart_rx.png)
+
 ## rtl/x_uart_tx
 
 ### Parameters

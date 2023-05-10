@@ -4,11 +4,28 @@
 
    - 1 Rx module
    - 1 Tx module
+   - Simple operation
+      
+      - 1 Start bit
+      - 8 Datas bits
+      - No parity bit
+      - 1 Stop bit
 
  - Verified with Verilator
 
-   - 9600 to  256000 baud
+   - 9600 to 256000 baud
    - 10MHz to 640MHz
+   - Transactors included
+   - Waveform examples included
+
+ - Synthesised with Yosys
+
+   - Parameter sweep with cmos tech transistor count
+   
+- Proven on FPGA
+
+   - Lattice ...
+   - FTDI ...
 
 ## rtl/x_uart_rx
 

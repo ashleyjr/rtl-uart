@@ -1,29 +1,21 @@
 # rtl-uart
 
  - UART modules written in SystemVerilog
-
    - 1 Rx module
    - 1 Tx module
    - Simple operation
-      
       - 1 Start bit
       - 8 Datas bits
       - No parity bit
       - 1 Stop bit
-
  - Verified with Verilator
-
    - 9600 to 256000 baud
    - 10MHz to 640MHz
    - Transactors included
    - Waveform examples included
-
  - Synthesised with Yosys
-
    - Parameter sweep with cmos tech transistor count
-   
 - Proven on FPGA
-
    - Lattice ...
    - FTDI ...
 
@@ -42,7 +34,7 @@
 - ``o_valid``: Output, 1-bit wide control asserted high when transmission received present on ``o_data``   
 - ``o_data``: Output, 8-bit wide data received
 
-### Size
+### Synthesised Size
 
 ![Screenshot](doc/images/x_uart_rx.png)
 

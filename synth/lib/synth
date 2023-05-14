@@ -1,4 +1,5 @@
 #!/bin/bash
+# Usage: ./synth <module to synth>
 
 FILENAME="synth.csv"
 KEYWORD0="   Estimated number of transistors:"
@@ -14,10 +15,10 @@ do
    do
       # Get transistor count
       TRANSISTORS=$(yosys \
-         -p "read -sv ../../rtl/x_uart_rx.sv" \
-         -p "chparam -set p_clk_hz $CLK x_uart_rx" \
-         -p "chparam -set p_baud $BAUD x_uart_rx" \
-         -p "synth -top x_uart_rx" \
+         -p "read -sv ../rtl/$1.sv" \
+         -p "chparam -set p_clk_hz $CLK $1" \
+         -p "chparam -set p_baud $BAUD $1" \
+         -p "synth -top $1" \
          -p "stat -tech cmos" \
          | grep "$KEYWORD0" \
          | sed -e "s/^$KEYWORD0//" -e "s/$KEYWORD1$//")

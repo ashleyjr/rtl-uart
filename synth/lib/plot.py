@@ -27,7 +27,8 @@ def main(csv_file, png_file):
     plt.xscale('log')
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("# Transistors")
-    plt.grid()
+    plt.grid(which='major')
+    plt.grid(which='minor')
     plt.savefig(png_file)
 
 

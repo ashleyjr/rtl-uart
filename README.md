@@ -54,5 +54,10 @@
  - ``i_valid``: Input, 1-bit wide control signal to be asserted high when ``i_data`` is ready
  - ``o_accept``: Output, 1-bit wide control signal asserted once ``i_data`` captured 
 
+### Synthesised Size
+
+![Screenshot](doc/images/x_uart_tx.png)
+
+
 ## Verification
 

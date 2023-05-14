@@ -1,0 +1,6 @@
+#!/bin/bash
+
+./lib/synth x_uart_tx
+
+python3 lib/plot.py --csv_file synth.csv --png_file ../doc/images/x_uart_tx.png 
+

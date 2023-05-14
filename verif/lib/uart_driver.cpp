@@ -13,6 +13,20 @@ UartDriver::UartDriver(uint32_t clk_hz, uint32_t baud){
    delay = 0;
 }
 
+bool UartDriver::io_delay(void){ 
+   switch(delay){
+      case 0:  delay = rand() % timer_top;
+               if(0 == delay){
+                  return true;
+               }
+               break; 
+      case 1:  delay = 0;
+               return true;
+      default: delay--;
+               break;
+   }
+   return false;
+}
 uint8_t UartDriver::advance(void) {
    uint8_t tx;
    timer++;

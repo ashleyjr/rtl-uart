@@ -16,6 +16,7 @@ UartSink::UartSink(uint32_t clk_hz, uint32_t baud){
 
 uint8_t UartSink::advance(uint8_t rx) {
    timer++;
+   //std::cout << unsigned(frame) << "\n";
    switch(state){
       case UartState::IDLE: 
          if(rx == 0){
@@ -32,6 +33,7 @@ uint8_t UartSink::advance(uint8_t rx) {
       case UartState::D0:
          if(timer == timer_top){
             timer = 0;
+            frame >>= 1;
             frame |= (rx << 7);
             state = UartState::D1;
          }
@@ -72,7 +74,7 @@ uint8_t UartSink::advance(uint8_t rx) {
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
-            frame |= (rx << 7);  
+            frame |= (rx << 7);
             state = UartState::D6;
          }
          break;
@@ -87,18 +89,24 @@ uint8_t UartSink::advance(uint8_t rx) {
       case UartState::D7:
          if(timer == timer_top){
             timer = 0;
+            frame >>= 1;
+            frame |= (rx << 7);
             state = UartState::STOP;
          }
          break;
       case UartState::STOP: 
          if(timer == timer_top){
             timer = 0;
-            state = UartState::IDLE;
-            
+            if(frame != recieves.front()){
+               std::cout << unsigned(frame) << " != " << unsigned(recieves.front()) << "\n";
+               return false; 
+            }
+            recieves.pop_front();
+            state = UartState::IDLE;         
          }
          break;
    }
-   return 0;
+   return true;
 }
 
 void UartSink::recieve(uint32_t data) {

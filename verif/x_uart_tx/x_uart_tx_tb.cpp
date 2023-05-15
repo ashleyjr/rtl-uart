@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 // TODO: Pass in on command line
-//#define TRACE_ENABLED
+#define TRACE_ENABLED
 
 int main(int argc, char** argv, char** env) {
    
@@ -80,7 +80,9 @@ int main(int argc, char** argv, char** env) {
       sim_time++;
 
       // Transactors
-      dut->i_data = drv.advance();
+      drv.advance(dut->o_accept);  
+      dut->i_data = drv.getData();
+      dut->i_valid = drv.getValid();
       if(!sink.advance(dut->o_tx)){      
          #ifdef TRACE_ENABLED  
          m_trace->close();
@@ -92,7 +94,7 @@ int main(int argc, char** argv, char** env) {
 
       // Rising Edge
       dut->i_clk = 1;
-           
+      
       // Tick
       dut->eval();
       #ifdef TRACE_ENABLED

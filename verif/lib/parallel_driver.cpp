@@ -6,11 +6,14 @@
 #include "include/parallel_driver.h"
 #include <list>
 
-ParallelDriver::ParallelDriver(void){}
+ParallelDriver::ParallelDriver(void){
+   delay = 0;
+   state = ParallelState::IDLE;
+}
 
 bool ParallelDriver::io_delay(void){ 
    switch(delay){
-      case 0:  delay = rand() % 100;
+      case 0:  delay = rand() % 10;
                if(0 == delay){
                   return true;
                }
@@ -23,9 +26,40 @@ bool ParallelDriver::io_delay(void){
    return false;
 }
 
-uint8_t ParallelDriver::advance(void) {
-   
-   return 0;
+void ParallelDriver::advance(uint8_t accept) {
+   switch(state){
+      case ParallelState::IDLE:
+         valid = 0;
+         if(!sends.empty() && io_delay()){
+            valid = 1; 
+            if(accept == 0){
+               state = ParallelState::PENDING; 
+            }else{
+               sends.pop_front();
+            }
+         }
+         break;
+      case ParallelState::PENDING:
+         if(accept == 1){
+            valid = 0;
+            if(!sends.empty() && io_delay()){
+               valid = 1;
+            }else{
+               state = ParallelState::IDLE;  
+            }
+            sends.pop_front();
+
+         }
+         break;
+   }
+}
+
+uint32_t ParallelDriver::getData(void) {
+   return sends.front();
+}
+
+uint8_t ParallelDriver::getValid(void) { 
+   return valid;
 }
 
 void ParallelDriver::send(uint8_t data) {

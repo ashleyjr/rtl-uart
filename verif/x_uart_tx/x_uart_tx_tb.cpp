@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 // TODO: Pass in on command line
-#define TRACE_ENABLED
+//#define TRACE_ENABLED
 
 int main(int argc, char** argv, char** env) {
    

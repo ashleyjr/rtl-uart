@@ -1,0 +1,19 @@
+#!/bin/bash
+
+CLK="10000000"
+BAUD="256000"
+
+verilator --trace \
+   --cc x_back_to_back.sv \
+   --cc ../../rtl/x_uart_tx.sv \
+   --cc ../../rtl/x_uart_rx.sv \
+   --cc ../../lib/parallel_driver.cpp \
+   --cc ../../lib/parallel_sink.cpp \
+   --exe x_back_to_back_tb.cpp \
+   -I../../lib/include \
+   -Gp_clk_hz=$CLK -Gp_baud=$BAUD 
+
+make -C obj_dir -f Vx_back_to_back.mk Vx_back_to_back
+
+./obj_dir/Vx_back_to_back $CLK $BAUD 100
+

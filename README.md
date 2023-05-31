@@ -1,16 +1,17 @@
 # rtl-uart
 
- - UART modules written in SystemVerilog
+ - Very simple UART modules written in SystemVerilog
    - 1 Rx module
    - 1 Tx module
-   - Simple operation
+   - Operation
+      - Least significant bit first
       - 1 Start bit
-      - 8 Datas bits
+      - 8 Data bits
       - No parity bit
       - 1 Stop bit
  - Verified with Verilator
    - 9600 to 256000 baud
-   - 10MHz to 640MHz
+   - 10MHz to 640MH (``i_clk``)
    - Transactors included
    - Waveform examples included
  - Synthesised with Yosys
@@ -36,13 +37,13 @@
 
 ### Waves
 
-![Screenshot](doc/images/x_uart_rx_wave_wide.png)
+![x_uart_rx_wave_wide](doc/images/x_uart_rx_wave_wide.png)
 
-![Screenshot](doc/images/x_uart_rx_wave_narrow.png)
+![x_uart_rx_wave_narrow](doc/images/x_uart_rx_wave_narrow.png)
 
 ### Synthesised Size
 
-![Screenshot](doc/images/x_uart_rx.png)
+![x_uart_rx_size](doc/images/x_uart_rx_size.png)
 
 ## rtl/x_uart_tx
 

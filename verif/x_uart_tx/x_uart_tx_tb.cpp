@@ -8,9 +8,6 @@
 #include "../lib/include/uart_sink.h"
 #include <stdio.h>
 
-// TODO: Pass in on command line
-//#define TRACE_ENABLED
-
 int main(int argc, char** argv, char** env) {
    
    vluint64_t sim_time = 0; 

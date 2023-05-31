@@ -4,6 +4,7 @@ CLK="10000000"
 BAUD="256000"
 
 verilator --trace \
+   -CFLAGS "-DTRACE_ENABLED" \
    --cc x_back_to_back.sv \
    --cc ../../rtl/x_uart_tx.sv \
    --cc ../../rtl/x_uart_rx.sv \

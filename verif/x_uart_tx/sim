@@ -4,6 +4,7 @@ CLK="10000000"
 BAUD="256000"
 
 verilator --trace \
+   -CFLAGS "-DTRACE_ENABLED" \
    --cc ../../rtl/x_uart_tx.sv \
    --cc ../../lib/parallel_driver.cpp \
    --cc ../../lib/uart_sink.cpp \

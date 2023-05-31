@@ -60,10 +60,15 @@
  - ``o_tx``: Output, 1-bit wide UART transmit wire
  - ``i_valid``: Input, 1-bit wide control signal to be asserted high when ``i_data`` is ready
  - ``o_accept``: Output, 1-bit wide control signal asserted once ``i_data`` captured 
+### Waves
+
+![x_uart_tx_wave_wide](doc/images/x_uart_tx_wave_wide.png)
+
+![x_uart_tx_wave_narrow](doc/images/x_uart_tx_wave_narrow.png)
 
 ### Synthesised Size
 
-![Screenshot](doc/images/x_uart_tx.png)
+![x_uart_tx_size](doc/images/x_uart_tx_size.png)
 
 
 ## Verification

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Exit on fail
+set -e
+
+TBS="x_uart_rx x_uart_tx x_front_to_front x_back_to_back"
+
+for TB in $TBS
+do
+   cd $TB
+   ./sweep
+   cd ..
+done
+
+

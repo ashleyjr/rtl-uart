@@ -1,0 +1,28 @@
+#!/bin/bash
+
+PKTS="1 10000"
+CLKS="10000000 20000000 40000000 80000000 160000000 320000000 640000000"
+BAUDS="9600 14400 19200 38400 57600 115200 128000 256000"
+CMD=" --cc x_front_to_front.sv \
+      --cc ../../rtl/x_uart_tx.sv \
+      --cc ../../rtl/x_uart_rx.sv \
+      --cc ../../lib/uart_driver.cpp \
+      --cc ../../lib/uart_sink.cpp \
+      --exe x_front_to_front_tb.cpp \
+      -I../../lib/include"
+
+# Exit on fail
+set -e
+
+for PKT in $PKTS
+do
+   for CLK in $CLKS 
+   do
+      for BAUD in $BAUDS
+      do
+         verilator $CMD -Gp_clk_hz=$CLK -Gp_baud=$BAUD  
+         make -s -C obj_dir -f Vx_front_to_front.mk Vx_front_to_front
+         ./obj_dir/Vx_front_to_front $CLK $BAUD $PKT
+      done
+   done
+done

@@ -7,7 +7,7 @@
 #include <list>
 
 UartSink::UartSink(uint32_t clk_hz, uint32_t baud){ 
-   state = UartState::IDLE;
+   state = UartSinkState::IDLE;
    timer_top = clk_hz / baud;
    timer_half = timer_top >> 1;
    timer = 0;
@@ -18,83 +18,83 @@ uint8_t UartSink::advance(uint8_t rx) {
    timer++;
    //std::cout << unsigned(frame) << "\n";
    switch(state){
-      case UartState::IDLE: 
+      case UartSinkState::IDLE: 
          if(rx == 0){
             timer = 0;
-            state = UartState::START;
+            state = UartSinkState::START;
          }
          break;
-      case UartState::START:  
+      case UartSinkState::START:  
          if(timer == timer_half){
             timer = 0;
-            state = UartState::D0;
+            state = UartSinkState::D0;
          }
          break;
-      case UartState::D0:
+      case UartSinkState::D0:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::D1;
+            state = UartSinkState::D1;
          }
          break;
-      case UartState::D1:
+      case UartSinkState::D1:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::D2;
+            state = UartSinkState::D2;
          }
          break;
-      case UartState::D2:
+      case UartSinkState::D2:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::D3;
+            state = UartSinkState::D3;
          }
          break;
-      case UartState::D3:
+      case UartSinkState::D3:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::D4;
+            state = UartSinkState::D4;
          }
          break;
-      case UartState::D4:
+      case UartSinkState::D4:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::D5;
+            state = UartSinkState::D5;
          }
          break;
-      case UartState::D5:
+      case UartSinkState::D5:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::D6;
+            state = UartSinkState::D6;
          }
          break;
-      case UartState::D6:
+      case UartSinkState::D6:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::D7;
+            state = UartSinkState::D7;
          }
          break;
-      case UartState::D7:
+      case UartSinkState::D7:
          if(timer == timer_top){
             timer = 0;
             frame >>= 1;
             frame |= (rx << 7);
-            state = UartState::STOP;
+            state = UartSinkState::STOP;
          }
          break;
-      case UartState::STOP: 
+      case UartSinkState::STOP: 
          if(timer == timer_top){
             timer = 0;
             if(frame != recieves.front()){
@@ -102,7 +102,7 @@ uint8_t UartSink::advance(uint8_t rx) {
                return false; 
             }
             recieves.pop_front();
-            state = UartState::IDLE;         
+            state = UartSinkState::IDLE;         
          }
          break;
    }

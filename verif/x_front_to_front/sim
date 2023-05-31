@@ -1,0 +1,19 @@
+#!/bin/bash
+
+CLK="10000000"
+BAUD="256000"
+
+verilator --trace \
+   --cc x_front_to_front.sv \
+   --cc ../../rtl/x_uart_tx.sv \
+   --cc ../../rtl/x_uart_rx.sv \
+   --cc ../../lib/uart_driver.cpp \
+   --cc ../../lib/uart_sink.cpp \
+   --exe x_front_to_front_tb.cpp \
+   -I../../lib/include \
+   -Gp_clk_hz=$CLK -Gp_baud=$BAUD 
+
+make -C obj_dir -f Vx_front_to_front.mk Vx_front_to_front
+
+./obj_dir/Vx_front_to_front $CLK $BAUD 100
+

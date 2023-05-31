@@ -6,16 +6,17 @@
 #include "include/uart_driver.h"
 #include <list>
 
-UartDriver::UartDriver(uint32_t clk_hz, uint32_t baud){ 
-   state = UartState::IDLE;
+UartDriver::UartDriver(uint32_t clk_hz, uint32_t baud, uint32_t timer_base){ 
+   state = UartDriverState::IDLE;
    timer_top = clk_hz / baud;
+   base = timer_base;
    timer = 0;
    delay = 0;
 }
 
 bool UartDriver::io_delay(void){ 
    switch(delay){
-      case 0:  delay = rand() % timer_top;
+      case 0:  delay = (base*timer_top) + rand() % timer_top;
                if(0 == delay){
                   return true;
                }
@@ -31,86 +32,86 @@ uint8_t UartDriver::advance(void) {
    uint8_t tx;
    timer++;
    switch(state){
-      case UartState::IDLE:
+      case UartDriverState::IDLE:
          tx = 1;
          if(!sends.empty() && io_delay()){
             timer = 0;
-            state = UartState::START;
+            state = UartDriverState::START;
          }
          break;
-      case UartState::START: 
+      case UartDriverState::START: 
          tx = 0;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D0;
+            state = UartDriverState::D0;
          }
          break;
-      case UartState::D0:
+      case UartDriverState::D0:
          tx = (sends.front()) & 0x1;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D1;
+            state = UartDriverState::D1;
          }
          break;
-      case UartState::D1:
+      case UartDriverState::D1:
          tx = (sends.front() >> 1) & 0x1;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D2;
+            state = UartDriverState::D2;
          }
          break;
-      case UartState::D2:
+      case UartDriverState::D2:
          tx = (sends.front() >> 2) & 0x1;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D3;
+            state = UartDriverState::D3;
          }
          break;
-      case UartState::D3:
+      case UartDriverState::D3:
          tx = (sends.front() >> 3) & 0x1;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D4;
+            state = UartDriverState::D4;
          }
          break;
-      case UartState::D4:
+      case UartDriverState::D4:
          tx = (sends.front() >> 4) & 0x1;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D5;
+            state = UartDriverState::D5;
          }
          break;
-      case UartState::D5:
+      case UartDriverState::D5:
          tx = (sends.front() >> 5) & 0x1;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D6;
+            state = UartDriverState::D6;
          }
          break;
-      case UartState::D6:
+      case UartDriverState::D6:
          tx = (sends.front() >> 6) & 0x1;
          if(timer == timer_top){
             timer = 0;
-            state = UartState::D7;
+            state = UartDriverState::D7;
          }
          break;
-      case UartState::D7:
+      case UartDriverState::D7:
          tx = (sends.front() >> 7) & 0x1;
          if(timer == timer_top){
             timer = 0;
             sends.pop_front();
-            state = UartState::STOP;
+            state = UartDriverState::STOP;
          }
          break;
-      case UartState::STOP:
+      case UartDriverState::STOP:
          tx = 1;
          if(timer == timer_top){
             timer = 0;
             if(!sends.empty() && io_delay()){
                timer = 0;
-               state = UartState::START;
+               state = UartDriverState::START;
             }else{
-               state = UartState::IDLE;
+               state = UartDriverState::IDLE;
             }
          }
          break;

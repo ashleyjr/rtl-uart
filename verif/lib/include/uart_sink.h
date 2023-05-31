@@ -3,7 +3,7 @@
 
 #include <list>
 
-enum class UartState { 
+enum class UartSinkState { 
    IDLE,
    START,
    D0,
@@ -24,7 +24,7 @@ class UartSink {
       void recieve(uint32_t data); 
       bool remaining(void); 
    private: 
-      UartState state; 
+      UartSinkState state; 
       uint32_t timer_top;
       uint32_t timer_half;
       uint32_t timer;

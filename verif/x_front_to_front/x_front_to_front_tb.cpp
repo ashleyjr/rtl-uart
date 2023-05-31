@@ -3,9 +3,9 @@
 #include <cstdlib>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
-#include "Vx_uart_rx.h"
-#include "../lib/include/parallel_sink.h"
+#include "Vx_front_to_front.h"
 #include "../lib/include/uart_driver.h"
+#include "../lib/include/uart_sink.h"
 #include <stdio.h>
 
 // TODO: Pass in on command line
@@ -14,7 +14,7 @@
 int main(int argc, char** argv, char** env) {
    
    vluint64_t sim_time = 0; 
-   Vx_uart_rx *dut = new Vx_uart_rx; 
+   Vx_front_to_front *dut = new Vx_front_to_front; 
    Verilated::traceEverOn(true);
    #ifdef TRACE_ENABLED
    VerilatedVcdC *m_trace = new VerilatedVcdC; 
@@ -27,8 +27,8 @@ int main(int argc, char** argv, char** env) {
    std::cout << "CONFIG: clk=" << clk << ",baud=" << baud << ",pkts=" << pkts << "\n";
 
    uint8_t test_vector;
-   UartDriver drv(clk, baud, 1);
-   ParallelSink sink;
+   UartSink sink(clk, baud);
+   UartDriver drv(clk, baud, 2);
   
    #ifdef TRACE_ENABLED
    dut->trace(m_trace, 5);
@@ -80,7 +80,7 @@ int main(int argc, char** argv, char** env) {
 
       // Transactors
       dut->i_rx = drv.advance();
-      if(!sink.advance(dut->o_valid, dut->o_data)){      
+      if(!sink.advance(dut->o_tx)){      
          #ifdef TRACE_ENABLED  
          m_trace->close();
          #endif
@@ -91,7 +91,7 @@ int main(int argc, char** argv, char** env) {
 
       // Rising Edge
       dut->i_clk = 1;
-           
+      
       // Tick
       dut->eval();
       #ifdef TRACE_ENABLED

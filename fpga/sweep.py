@@ -4,6 +4,7 @@ import time
 import sys
 import matplotlib.pyplot as plt
 import random
+import os
 
 VECTORS=100
 PROGBAR=50
@@ -44,11 +45,13 @@ class uart:
         print("Error: No port found")
         sys.exit(1)
 
+
 def main():
     u = uart()
     bauds = [9600,115200]
     p = u.search()
     for b in bauds:
+        os.system('./syn_pnr_deploy > /dev/null')
         old_bar = 0
         u.create(p,b)
         for i in range(VECTORS):

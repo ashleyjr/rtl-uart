@@ -1,0 +1,22 @@
+#!/bin/bash
+echo "========================================================"
+echo "Running synth..."
+rm -f syn.log
+yosys -p 'synth_ice40 -top x_front_to_front -blif x_front_to_front.blif -json x_front_to_front.json' ../rtl/x_uart_rx.sv ../rtl/x_uart_tx.sv ../verif/x_front_to_front/x_front_to_front.sv > syn.log
+cat syn.log | grep -A30 statistics
+echo "========================================================"
+echo "Running place and route..."
+rm -f pnr.log
+nextpnr-ice40 --hx8k --json x_front_to_front.json --package ct256 --pcf x_front_to_front.pcf --asc x_front_to_front.asc &> pnr.log
+cat pnr.log | grep -A6 "Device utilisation"
+echo "========================================================"
+echo "Running Timing check..."
+icetime -d hx8k x_front_to_front.asc > x_front_to_front.time
+cat x_front_to_front.time
+echo "========================================================"
+echo "Packing..."
+icepack x_front_to_front.asc x_front_to_front.bin
+echo "========================================================"
+echo "Writing..."
+iceprog  -S x_front_to_front.bin
+echo "========================================================"

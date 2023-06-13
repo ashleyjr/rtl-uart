@@ -1,0 +1,5 @@
+set_io i_clk      J3
+set_io i_rst      D16
+set_io o_tx       B12
+set_io i_rx       B10
+ 

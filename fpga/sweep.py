@@ -9,6 +9,7 @@ import os
 VECTORS=100
 PROGBAR=50
 KEYWORD="Lattice FTUSB Interface Cable"
+CLKS=[12000000,24000000,48000000,96000000,192000000]
 BAUDS=[9600,14400,19200,38400,57600,115200,128000,256000]
 
 class uart:
@@ -40,7 +41,6 @@ class uart:
         )
         self.ser.flushInput()
         self.ser.flushOutput()
-        print(f"Baud: {baud}")
 
     def destory(self):
         self.ser.close()
@@ -58,27 +58,33 @@ class uart:
 def main():
     u = uart()
     p = u.search()
-    for b in BAUDS:
-        os.system(f"./syn_pnr_deploy {b} > sweep_{b}.log 2>&1")
-        old_bar = 0
-        u.create(p,b)
-        for i in range(VECTORS):
-            u.swap(random.randrange(0x00,0xFF))
-            new = float(1+i)/float(VECTORS)
-            percent = int(new * 100)
-            bar = int(new * PROGBAR)
-            if(bar > old_bar):
-                old_bar = bar
-                s = f"\r{percent:03}%: |"
-                for j in range(PROGBAR):
-                    if(j < bar):
-                        s += '#'
+    for c in CLKS:
+        for b in BAUDS:
+            print(f"Clock: {c} Baud: {b}")
+            os.system(f"./syn_pnr_deploy {c} {b}  > sweep_{c}_{b}.log 2>&1")
+            old_bar = 0
+            u.create(p,b)
+            for i in range(VECTORS):
+                u.swap(random.randrange(0x00,0xFF))
+                new = float(1+i)/float(VECTORS)
+                percent = int(new * 100)
+                bar = int(new * PROGBAR)
+                if(bar > old_bar):
+                    old_bar = bar
+                    s = f"\r{percent:03}%: |"
+                    for j in range(PROGBAR):
+                        if(j < bar):
+                            s += '#'
+                        else:
+                            s += ' '
+                    s += "|"
+                    if(i == (VECTORS-1)):
+                        e="\n"
                     else:
-                        s += ' '
-                s += "|"
-                print(s,end="")
-        u.destory()
-        print("\n")
+                        e=""
+                    print(s,end=e)
+            u.destory()
+    print("PASS")
 
 if "__main__" == __name__:
     main()

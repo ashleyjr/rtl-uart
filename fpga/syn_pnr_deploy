@@ -3,27 +3,26 @@ set -e
 echo "========================================================"
 echo "Running synth..."
 
-SYN_CMD=$(yosys \
+yosys \
    -p "read -sv ../rtl/x_uart_rx.sv" \
    -p "read -sv ../rtl/x_uart_tx.sv" \
    -p "read -sv ../verif/x_front_to_front/x_front_to_front.sv" \
-   -p "chparam -set p_clk_hz $CLK 12000000" \
-   -p "chparam -set p_baud $BAUD 115200" \
-   -p "synth -top x_front_to_front" )
-
+   -p "read -sv x_fpga.sv" \
+   -p "chparam -set p_clk_hz $1" \
+   -p "chparam -set p_baud $2" \
+   -p "synth_ice40 -top x_fpga -json x_fpga.json"
 echo "========================================================"
 echo "Running place and route..."
 rm -f pnr.log
-nextpnr-ice40 --hx8k --json x_front_to_front.json --package ct256 --pcf x_front_to_front.pcf --asc x_front_to_front.asc &> pnr.log
-cat pnr.log | grep -A6 "Device utilisation"
+nextpnr-ice40 --hx8k --json x_fpga.json --package ct256 --pcf x_fpga.pcf --asc x_fpga.asc 
 echo "========================================================"
 echo "Running Timing check..."
-icetime -d hx8k x_front_to_front.asc > x_front_to_front.time
-cat x_front_to_front.time
+icetime -d hx8k x_fpga.asc > x_fpga.time
+cat x_fpga.time
 echo "========================================================"
 echo "Packing..."
-icepack x_front_to_front.asc x_front_to_front.bin
+icepack x_fpga.asc x_fpga.bin
 echo "========================================================"
 echo "Writing..."
-iceprog  -S x_front_to_front.bin
+iceprog  -S x_fpga.bin
 echo "========================================================"

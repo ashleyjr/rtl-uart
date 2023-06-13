@@ -1,9 +1,16 @@
 #!/bin/bash
+set -e
 echo "========================================================"
 echo "Running synth..."
-rm -f syn.log
-yosys -p 'synth_ice40 -top x_front_to_front -blif x_front_to_front.blif -json x_front_to_front.json' ../rtl/x_uart_rx.sv ../rtl/x_uart_tx.sv ../verif/x_front_to_front/x_front_to_front.sv > syn.log
-cat syn.log | grep -A30 statistics
+
+SYN_CMD=$(yosys \
+   -p "read -sv ../rtl/x_uart_rx.sv" \
+   -p "read -sv ../rtl/x_uart_tx.sv" \
+   -p "read -sv ../verif/x_front_to_front/x_front_to_front.sv" \
+   -p "chparam -set p_clk_hz $CLK 12000000" \
+   -p "chparam -set p_baud $BAUD 115200" \
+   -p "synth -top x_front_to_front" )
+
 echo "========================================================"
 echo "Running place and route..."
 rm -f pnr.log

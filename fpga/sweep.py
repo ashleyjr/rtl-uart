@@ -9,6 +9,7 @@ import os
 VECTORS=100
 PROGBAR=50
 KEYWORD="Lattice FTUSB Interface Cable"
+BAUDS=[9600,14400,19200,38400,57600,115200,128000,256000]
 
 class uart:
     def get(self):
@@ -17,9 +18,16 @@ class uart:
 
     def swap(self, d):
         self.ser.write(d.to_bytes(1, byteorder='big'))
-        r = int.from_bytes(self.ser.read(1), byteorder='big')
+        r = self.ser.read(1)
+        if(len(r) == 0):
+            print("Error: Timeout")
+            self.destory()
+            sys.exit(1)
+        r = int.from_bytes(r, byteorder='big')
         if(r != d):
-            print("Error")
+            print(f"Error {r} != {d}")
+            self.destory()
+            sys.exit(1)
 
     def create(self,port,baud):
         self.ser = serial.Serial(
@@ -27,7 +35,8 @@ class uart:
             baudrate=baud,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.EIGHTBITS
+            bytesize=serial.EIGHTBITS,
+            timeout=1
         )
         self.ser.flushInput()
         self.ser.flushOutput()
@@ -48,10 +57,9 @@ class uart:
 
 def main():
     u = uart()
-    bauds = [9600,115200]
     p = u.search()
-    for b in bauds:
-        os.system('./syn_pnr_deploy > /dev/null')
+    for b in BAUDS:
+        os.system(f"./syn_pnr_deploy {b} > sweep_{b}.log 2>&1")
         old_bar = 0
         u.create(p,b)
         for i in range(VECTORS):

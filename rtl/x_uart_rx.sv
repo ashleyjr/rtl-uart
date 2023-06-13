@@ -1,5 +1,5 @@
 module x_uart_rx#(
-   parameter integer p_clk_hz = 1000000, 
+   parameter integer p_clk_hz = 1200000, 
    parameter integer p_baud   = 115200
 )(
    input    logic       i_clk,

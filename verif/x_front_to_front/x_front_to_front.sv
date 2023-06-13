@@ -1,5 +1,5 @@
 module x_front_to_front#(
-   parameter integer p_clk_hz = 1000000, 
+   parameter integer p_clk_hz = 12000000, 
    parameter integer p_baud   = 115200
 )(
    input    logic       i_clk,
@@ -15,7 +15,7 @@ module x_front_to_front#(
    logic       valid_d;
    logic       valid_q;
 
-   logic       tx_accept;   
+   logic       tx_accept;    
 
    x_uart_rx #(
       .p_clk_hz   (p_clk_hz   ),

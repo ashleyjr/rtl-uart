@@ -20,10 +20,11 @@ int main(int argc, char** argv, char** env) {
    uint32_t clk = std::stoi(argv[1]);
    uint32_t baud = std::stoi(argv[2]);
    uint32_t pkts = std::stoi(argv[3]);
+   uint32_t burst = std::stoi(argv[4]);
 
    std::cout << "CONFIG: clk=" << clk << ",baud=" << baud << ",pkts=" << pkts << "\n";
 
-   uint8_t test_vector;
+   uint8_t test_vector; 
    UartSink sink(clk, baud);
    UartDriver drv(clk, baud, 2);
   
@@ -56,15 +57,22 @@ int main(int argc, char** argv, char** env) {
    // Out of Reset
    dut->i_rst = 0;
 
-   // List of sends
-   for(uint32_t i=0;i<pkts;i++){
-      test_vector = rand(); 
-      drv.send(test_vector);
-      sink.recieve(test_vector);
-   }
+  
    
-   while (sink.remaining()) {
-      
+   while ((pkts != 0) || sink.remaining()) {
+   
+      if(!sink.remaining()){ 
+         for(uint32_t i=0;i<burst;i++){  
+            if(0 == pkts){
+               break;
+            }
+            test_vector = rand(); 
+            drv.send(test_vector);
+            sink.recieve(test_vector); 
+            pkts--; 
+         }  
+      }
+
       // Falling Edge
       dut->i_clk = 0; 
      

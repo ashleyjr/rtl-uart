@@ -6,27 +6,49 @@ import matplotlib.pyplot as plt
 import random
 import os
 
-VECTORS=100
+VECTORS=1024
+BURST=128
 PROGBAR=50
 KEYWORD="Lattice FTUSB Interface Cable"
 CLKS=[12000000,24000000,48000000,96000000,192000000]
 BAUDS=[9600,14400,19200,38400,57600,115200,128000,256000]
 
 class uart:
+
+
+    def genVectors(self, length):
+        self.tx_ptr = 0
+        self.rx_ptr = 0
+        self.vectors = bytearray()
+        for i in range(length):
+            d = random.randrange(0x00,0xFF)
+            d = d.to_bytes(1, byteorder='big')
+            self.vectors += d
+
     def get(self):
         rx = int.from_bytes(self.ser.read(1), byteorder='big')
         return rx
 
-    def swap(self, d):
-        self.ser.write(d.to_bytes(1, byteorder='big'))
-        r = self.ser.read(1)
-        if(len(r) == 0):
-            print("Error: Timeout")
-            self.destory()
-            sys.exit(1)
-        r = int.from_bytes(r, byteorder='big')
-        if(r != d):
-            print(f"Error {r} != {d}")
+    def send(self, length):
+        burst = bytearray()
+        for i in range(length):
+            burst.append(self.vectors[self.tx_ptr])
+            self.tx_ptr += 1
+        self.ser.write(burst)
+
+    def get(self, length):
+        rxs = self.ser.read(length)
+        error = False
+        for rx in rxs:
+            d = self.vectors[self.rx_ptr]
+            if(rx != d):
+                print(f"Error: Pos={self.rx_ptr}, Epected={d}, Got={rx}")
+                eror = True
+            self.rx_ptr += 1
+        if(len(rxs) != length):
+            print(f"Error: Timeout - Expected #{length} bytes, Got #{len(rxs)} bytes")
+            error = True
+        if(error):
             self.destory()
             sys.exit(1)
 
@@ -64,9 +86,11 @@ def main():
             os.system(f"./syn_pnr_deploy {c} {b}  > sweep_{c}_{b}.log 2>&1")
             old_bar = 0
             u.create(p,b)
-            for i in range(VECTORS):
-                u.swap(random.randrange(0x00,0xFF))
-                new = float(1+i)/float(VECTORS)
+            u.genVectors(VECTORS)
+            for i in range(0,VECTORS,BURST):
+                u.send(BURST)
+                u.get(BURST)
+                new = float(BURST+i)/float(VECTORS)
                 percent = int(new * 100)
                 bar = int(new * PROGBAR)
                 if(bar > old_bar):
@@ -78,7 +102,7 @@ def main():
                         else:
                             s += ' '
                     s += "|"
-                    if(i == (VECTORS-1)):
+                    if(i == (VECTORS-BURST)):
                         e="\n"
                     else:
                         e=""

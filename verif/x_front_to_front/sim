@@ -16,5 +16,5 @@ verilator --trace \
 
 make -C obj_dir -f Vx_front_to_front.mk Vx_front_to_front
 
-./obj_dir/Vx_front_to_front $CLK $BAUD 100
+./obj_dir/Vx_front_to_front $CLK $BAUD 1024 128
 

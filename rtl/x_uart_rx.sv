@@ -16,17 +16,14 @@ module x_uart_rx#(
    localparam logic [p_timer_width-1:0] p_timer_top_w  = p_timer_top[p_timer_width-1:0];
    localparam logic [p_timer_width-1:0] p_timer_half_w = p_timer_half[p_timer_width-1:0];
    
-   typedef enum logic [6:0] {
+   typedef enum logic [3:0] {
       IDLE, START, 
       A0, A1, A2, A3, A4, A5, A6, A7
    } sm_uart_t;
  
    logic                      p0_rx;
    logic                      p1_rx;
-   logic                      p2_rx;
-   logic                      p3_rx;
-
-   logic                      rx_rise;
+ 
    logic                      rx_fall;
 
    sm_uart_t                  sm_uart_q;
@@ -52,27 +49,16 @@ module x_uart_rx#(
    logic                      valid_q;
 
    ///////////////////////////////////////////////////////////////////
-   // Resync Input
+   // Detect Input
   
    assign p0_rx = i_rx;
 
    always_ff@(posedge i_clk or posedge i_rst) begin
       if(i_rst)   p1_rx <= 'd1;
       else        p1_rx <= p0_rx;
-   end
- 
-   always_ff@(posedge i_clk or posedge i_rst) begin
-      if(i_rst)   p2_rx <= 'd1;
-      else        p2_rx <= p1_rx;
-   end   
+   end 
    
-   always_ff@(posedge i_clk or posedge i_rst) begin
-      if(i_rst)   p3_rx <= 'd1;
-      else        p3_rx <= p2_rx;
-   end   
-  
-   assign rx_rise =  p2_rx & ~p3_rx;
-   assign rx_fall = ~p2_rx &  p3_rx;
+   assign rx_fall = ~p0_rx &  p1_rx;
 
    ///////////////////////////////////////////////////////////////////
    // Timer
@@ -122,10 +108,11 @@ module x_uart_rx#(
    ///////////////////////////////////////////////////////////////////
    // Flop RX
  
-   assign data_d  = {p2_rx, data_q[7:1]};
+   assign data_d  = {p0_rx, data_q[7:1]};
    assign data_en = ~(  (sm_uart_q == IDLE)|
                         (sm_uart_q == START)) & 
                       sm_uart_en;
+   
    always_ff@(posedge i_clk or posedge i_rst) begin
       if(i_rst)         data_q <= 'd0;
       else if(data_en)  data_q <= data_d;

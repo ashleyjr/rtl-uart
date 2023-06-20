@@ -67,7 +67,10 @@ int main(int argc, char** argv, char** env) {
       
       // Falling Edge
       dut->i_clk = 0; 
-     
+    
+       // Drive in
+      dut->i_rx = drv.advance();    
+      
       // Tick
       dut->eval();
       #ifdef TRACE_ENABLED
@@ -75,8 +78,7 @@ int main(int argc, char** argv, char** env) {
       #endif
       sim_time++;
 
-      // Transactors
-      dut->i_rx = drv.advance();
+      // Capture Out
       if(!sink.advance(dut->o_valid, dut->o_data)){      
          #ifdef TRACE_ENABLED  
          m_trace->close();
@@ -88,7 +90,7 @@ int main(int argc, char** argv, char** env) {
 
       // Rising Edge
       dut->i_clk = 1;
-           
+       
       // Tick
       dut->eval();
       #ifdef TRACE_ENABLED

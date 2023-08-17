@@ -56,12 +56,14 @@ int main(int argc, char** argv, char** env) {
 
    // Out of Reset
    dut->i_rst = 0;
+ 
+   while (pkts > 0) {
+   
+ 
+      std::cout << "Drv " << drv.left() << "\n";
+      std::cout << "Sink " << sink.left() << "\n";
 
-  
-   
-   while ((pkts != 0) || sink.remaining()) {
-   
-      if(!sink.remaining()){ 
+      if(!sink.remaining()){  
          for(uint32_t i=0;i<burst;i++){  
             if(0 == pkts){
                break;
@@ -73,9 +75,12 @@ int main(int argc, char** argv, char** env) {
          }  
       }
 
+
+
       // Falling Edge
-      dut->i_clk = 0; 
-     
+      dut->i_clk = 0;  
+      dut->i_rx = drv.advance();
+      
       // Tick
       dut->eval();
       #ifdef TRACE_ENABLED
@@ -83,8 +88,7 @@ int main(int argc, char** argv, char** env) {
       #endif
       sim_time++;
 
-      // Transactors
-      dut->i_rx = drv.advance();
+      // Transactors 
       if(!sink.advance(dut->o_tx)){      
          #ifdef TRACE_ENABLED  
          m_trace->close();

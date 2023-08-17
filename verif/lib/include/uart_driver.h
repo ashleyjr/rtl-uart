@@ -22,6 +22,7 @@ class UartDriver {
       UartDriver(uint32_t clk_hz, uint32_t baud, uint32_t timer_base); 
       uint8_t advance(void);
       void send(uint8_t data);
+      int left(void);
    private:
       bool io_delay(void);
       UartDriverState state; 

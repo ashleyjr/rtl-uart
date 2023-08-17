@@ -5,15 +5,14 @@ import sys
 import matplotlib.pyplot as plt
 import random
 import os
+import time
 
 VECTORS=1024
-BURST=128
+BURST=8
 PROGBAR=50
 KEYWORD="Lattice FTUSB Interface Cable"
-CLKS=[24000000,48000000,96000000,192000000]
-BAUDS=[115200,128000,256000]
-
-#BAUDS=[9600,14400,19200,38400,57600,115200,128000,256000]
+CLKS=[12000000,24000000,48000000,96000000,192000000]
+BAUDS=[9600,14400,19200,38400,57600,115200,128000,256000]
 
 class uart:
 
@@ -26,10 +25,6 @@ class uart:
             d = random.randrange(0x00,0xFF)
             d = d.to_bytes(1, byteorder='big')
             self.vectors += d
-
-    def get(self):
-        rx = int.from_bytes(self.ser.read(1), byteorder='big')
-        return rx
 
     def send(self, length):
         burst = bytearray()
@@ -45,7 +40,7 @@ class uart:
             d = self.vectors[self.rx_ptr]
             if(rx != d):
                 print(f"Error: Pos={self.rx_ptr}, Epected={d}, Got={rx}")
-                eror = True
+                error = True
             self.rx_ptr += 1
         if(len(rxs) != length):
             print(f"Error: Timeout - Expected #{length} bytes, Got #{len(rxs)} bytes")
@@ -78,6 +73,8 @@ class uart:
         print("Error: No port found")
         sys.exit(1)
 
+    def waiting(self):
+        return self.ser.inWaiting()
 
 def main():
     u = uart()
@@ -91,6 +88,8 @@ def main():
             u.genVectors(VECTORS)
             for i in range(0,VECTORS,BURST):
                 u.send(BURST)
+                while u.waiting() < BURST:
+                    pass
                 u.get(BURST)
                 new = float(BURST+i)/float(VECTORS)
                 percent = int(new * 100)

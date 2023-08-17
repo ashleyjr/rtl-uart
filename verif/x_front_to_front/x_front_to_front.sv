@@ -7,28 +7,27 @@ module x_front_to_front#(
    input    logic       i_rx,
    output   logic       o_tx
 );
-   logic       rx_valid;
-   logic [7:0] rx_data;
+   logic          rx_valid;
+   logic [7:0]    rx_data;
 
-   
-   logic [127:0]  data_en;
-   logic [7:0]    data_q   [127:0];
+   logic [7:0]   data_en;
+   logic [7:0]    data_q   [7:0];
 
    logic          rx_ptr_en;
-   logic [6:0]    rx_ptr_d;
-   logic [6:0]    rx_ptr_q;
+   logic [2:0]    rx_ptr_d;
+   logic [2:0]    rx_ptr_q;
    
    logic          tx_ptr_en;
-   logic [6:0]    tx_ptr_d;
-   logic [6:0]    tx_ptr_q;
+   logic [2:0]    tx_ptr_d;
+   logic [2:0]    tx_ptr_q;
      
    logic          tx_valid;
    logic [7:0]    tx_data;
    logic          tx_accept;    
 
    logic          fill_en;
-   logic [7:0]    fill_d;
-   logic [7:0]    fill_q;
+   logic [4:0]    fill_d;
+   logic [4:0]    fill_q;
 
    logic          top;
    logic          bot;
@@ -48,10 +47,10 @@ module x_front_to_front#(
    );
  
    // Write to the FIFO
-   assign data_en = {{127{1'b0}},rx_valid} << rx_ptr_q;
+   assign data_en = {{7{1'b0}},rx_valid} << rx_ptr_q;
 
    generate
-      for(genvar i=0;i<128;i++) begin
+      for(genvar i=0;i<8;i++) begin
          always_ff@(posedge i_clk or posedge i_rst) begin
             if(i_rst)            data_q[i] <= 'd0;
             else if(data_en[i])  data_q[i] <= rx_data;
@@ -91,7 +90,7 @@ module x_front_to_front#(
    end
    
    // Drain
-   assign top = (fill_q == 127);
+   assign top = (fill_q == 7);
    assign bot = (fill_q == 0);
 
    assign drain_en = top | bot;

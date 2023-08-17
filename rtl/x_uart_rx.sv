@@ -3,7 +3,7 @@ module x_uart_rx#(
    parameter integer p_baud   = 115200
 )(
    input    logic       i_clk,
-   input    logic       i_rst,
+   input    logic       i_rst_n,
    input    logic       i_rx,
    output   logic       o_valid,    
    output   logic [7:0] o_data
@@ -15,20 +15,26 @@ module x_uart_rx#(
   
    localparam logic [p_timer_width-1:0] p_timer_top_w  = p_timer_top[p_timer_width-1:0];
    localparam logic [p_timer_width-1:0] p_timer_half_w = p_timer_half[p_timer_width-1:0];
-   
-   typedef enum logic [3:0] {
-      IDLE, START, 
-      A0, A1, A2, A3, A4, A5, A6, A7
-   } sm_uart_t;
+    
+   localparam logic [3:0] IDLE   = 4'h0; 
+   localparam logic [3:0] START  = 4'h1; 
+   localparam logic [3:0] A0     = 4'h2; 
+   localparam logic [3:0] A1     = 4'h3; 
+   localparam logic [3:0] A2     = 4'h4; 
+   localparam logic [3:0] A3     = 4'h5; 
+   localparam logic [3:0] A4     = 4'h6; 
+   localparam logic [3:0] A5     = 4'h7; 
+   localparam logic [3:0] A6     = 4'h8; 
+   localparam logic [3:0] A7     = 4'h9; 
  
    logic                      p0_rx;
    logic                      p1_rx;
  
    logic                      rx_fall;
 
-   sm_uart_t                  sm_uart_q;
-   sm_uart_t                  sm_uart_d;  
-   sm_uart_t                  sm_uart_inc;  
+   logic [3:0]                sm_uart_q;
+   logic [3:0]                sm_uart_d;  
+   logic [3:0]                sm_uart_inc;  
    logic                      sm_uart_en;
    logic                      sm_uart_idle;
    logic                      sm_uart_start;
@@ -53,9 +59,9 @@ module x_uart_rx#(
   
    assign p0_rx = i_rx;
 
-   always_ff@(posedge i_clk or posedge i_rst) begin
-      if(i_rst)   p1_rx <= 'd1;
-      else        p1_rx <= p0_rx;
+   always@(posedge i_clk or negedge i_rst_n) begin
+      if(!i_rst_n)   p1_rx <= 'd1;
+      else           p1_rx <= p0_rx;
    end 
    
    assign rx_fall = ~p0_rx &  p1_rx;
@@ -72,9 +78,9 @@ module x_uart_rx#(
    assign timer_en   =  ~sm_uart_idle |  
                        ((sm_uart_idle) & rx_fall);
 
-   always_ff@(posedge i_clk or posedge i_rst) begin
-      if(i_rst)         timer_q <= 'd0;
-      else if(timer_en) timer_q <= timer_d;
+   always@(posedge i_clk or negedge i_rst_n) begin
+      if(!i_rst_n)         timer_q <= 'd0;
+      else if(timer_en)    timer_q <= timer_d;
    end
    
    ///////////////////////////////////////////////////////////////////
@@ -88,9 +94,9 @@ module x_uart_rx#(
                           (sm_uart_start) ? timer_half:
                                             timer_top; 
 
-   always_ff@(posedge i_clk or posedge i_rst) begin
-      if(i_rst)            sm_uart_q <= IDLE;
-      else if(sm_uart_en)  sm_uart_q <= sm_uart_d;
+   always@(posedge i_clk or negedge i_rst_n) begin
+      if(!i_rst_n)            sm_uart_q <= IDLE;
+      else if(sm_uart_en)     sm_uart_q <= sm_uart_d;
    end
   
    ///////////////////////////////////////////////////////////////////
@@ -98,9 +104,9 @@ module x_uart_rx#(
 
    assign valid_d = (sm_uart_q == A7) & timer_top; 
 
-   always_ff@(posedge i_clk or posedge i_rst) begin
-      if(i_rst)   valid_q <= 'd0;
-      else        valid_q <= valid_d;
+   always@(posedge i_clk or negedge i_rst_n) begin
+      if(!i_rst_n)   valid_q <= 'd0;
+      else           valid_q <= valid_d;
    end
 
    assign o_valid = valid_q;
@@ -113,9 +119,9 @@ module x_uart_rx#(
                         (sm_uart_q == START)) & 
                       sm_uart_en;
    
-   always_ff@(posedge i_clk or posedge i_rst) begin
-      if(i_rst)         data_q <= 'd0;
-      else if(data_en)  data_q <= data_d;
+   always@(posedge i_clk or negedge i_rst_n) begin
+      if(!i_rst_n)         data_q <= 'd0;
+      else if(data_en)     data_q <= data_d;
    end
 
    assign o_data = data_q;

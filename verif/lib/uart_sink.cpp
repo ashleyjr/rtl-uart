@@ -116,3 +116,7 @@ void UartSink::recieve(uint32_t data) {
 bool UartSink::remaining(void) {
    return !recieves.empty();
 }
+
+int UartSink::left(void) {
+   return recieves.size();
+}

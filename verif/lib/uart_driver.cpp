@@ -121,4 +121,8 @@ uint8_t UartDriver::advance(void) {
 
 void UartDriver::send(uint8_t data) {
    sends.push_back(data);
-}     
+}
+
+int UartDriver::left(void) {
+   return sends.size();
+}

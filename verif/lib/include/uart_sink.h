@@ -23,6 +23,7 @@ class UartSink {
       uint8_t advance(uint8_t rx);
       void recieve(uint32_t data); 
       bool remaining(void); 
+      int left(void);
    private: 
       UartSinkState state; 
       uint32_t timer_top;
